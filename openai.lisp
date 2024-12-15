@@ -1,29 +1,42 @@
 (ql:quickload :dexador)
-(ql:quickload :alexandria)
-(ql:quickload :shasht)
+(ql:quickload :serapeum)
+(ql:quickload :com.inuoe.jzon)
 
-(defvar openai-url "https://api.openai.com/v1/chat/completions")
+(defpackage :openai (:use #:cl #:alexandria #:serapeum))
+
+(in-package :openai)
+
+(defvar api-url "https://api.openai.com/v1/chat/completions")
 (defvar api-key (uiop:getenv "OPENAI_API_KEY"))
 
+(defun get-message (response)
+    (~>> response
+        (gethash "choices")
+        ((lambda (vector) (svref vector 0)))
+        (gethash "message")
+        (gethash "content")))
 
-(defparameter shasht:*write-plist-as-object* t)
-(defparameter shasht:*symbol-name-function* (lambda (symbol) (string-downcase (symbol-name symbol))))
+(defun create-completion (params)
+    "generates response, expects a hashmap specifying arguments exactly like py/js sdk. Returns a hashmap"
+    (com.inuoe.jzon:parse
+        (dex:post api-url :headers (list (cons "Content-Type" "application/json")
+                                         (cons "Authorization" (concatenate 'string "Bearer " api-key)))
+                          :content (com.inuoe.jzon:stringify params))))
 
-
-(defun create-completion (plist)
-    "generates response, expects an plist specifying arguments exactly like py/js sdk"
-    (shasht:read-json
-        (dex:post openai-url :headers `(("Content-Type" . "application/json")
-                                        ("Authorization" . ,(concatenate 'string "Bearer " api-key)))
-                             :content (shasht:write-json plist nil))))
-
-(defun answer-user-question (question-string &key (model "gpt-4o-mini"))
+(defun answer (question-string &key (model "gpt-4o-mini"))
     "answers the users question, simple as that. Uses gpt-4o-mini by default"
-    (create-completion `(:model ,model
-                         :messages ((:role "user"
-                                     :content ,question-string)))))
+    (get-message 
+        (create-completion (dict :model model
+                                 :messages (list
+                                            (dict :role "user"
+                                                  :content question-string))))))
 
 
-(create-completion '(:model "gpt-4o-mini" :messages ((:role "user" :content "hi"))))
+;; its easy to write concise data using serapeum dict
+;; examples:
+(create-completion (dict :model "gpt-4o-mini"
+                         :messages (list
+                                    (dict :role "user"
+                                          :content "hi"))))
 
-(answer-user-question "whats 2+2")
+(answer "how do i write a concise hashmap in common lisp")
