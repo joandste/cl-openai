@@ -1,31 +1,27 @@
 (defpackage :openai
     (:use :cl :alexandria :serapeum)
-    (:import-from #:dex #:com.inuoe.jzon)
-    (:export #:create-completion #:answer))
+    (:export #:chat-completion #:generate-image #:*api-key*))
 
 (in-package :openai)
 
-(defvar api-url "https://api.openai.com/v1/chat/completions")
-(defvar api-key (uiop:getenv "OPENAI_API_KEY"))
+(defvar api-url "https://api.openai.com/v1")
+(defparameter *api-key* nil)
+(defun get-api-key () (if *api-key*
+                          (uiop:getenv "OPENAI_API_KEY")
+                          *api-key*))
 
-(defun get-message (response)
-    (~>> response
-        (gethash "choices")
-        ((lambda (vector) (svref vector 0)))
-        (gethash "message")
-        (gethash "content")))
-
-(defun create-completion (params)
+(defun chat-completion (params)
     "generates response, expects a hashmap specifying arguments exactly like py/js sdk. Returns a hashmap"
     (com.inuoe.jzon:parse
-        (dex:post api-url :headers (list (cons "Content-Type" "application/json")
-                                         (cons "Authorization" (concatenate 'string "Bearer " api-key)))
-                          :content (com.inuoe.jzon:stringify params))))
+        (dex:post (concat api-url "/chat/completions")
+            :headers (list (cons "Content-Type" "application/json")
+                           (cons "Authorization" (concat "Bearer " (get-api-key))))
+            :content (com.inuoe.jzon:stringify params))))
 
-(defun answer (question-string &key (model "gpt-4o-mini"))
-    "answers the users question, simple as that. Uses gpt-4o-mini by default"
-    (get-message 
-        (create-completion (dict :model model
-                                 :messages (list
-                                            (dict :role "user"
-                                                  :content question-string))))))
+(defun generate-image (params)
+    "generates image, expects a hashmap specifying arguments exactly like py/js sdk. Returns a hashmap with urls to images"
+    (com.inuoe.jzon:parse
+        (dex:post (concat api-url "/images/generations")
+            :headers (list (cons "Content-Type" "application/json")
+                           (cons "Authorization" (concat "Bearer " (get-api-key))))
+            :content (com.inuoe.jzon:stringify params))))
