@@ -2,7 +2,7 @@
 
 (Very) Simple WIP library to use OpenAI API with Common Lisp, can generate chats and images
 
-Example using Serapeum's dict to write a concise API call:
+Example using Serapeum's dict to write an API call with lisp datastructures:
 ```
 (create-completion (dict :model "gpt-4o-mini"
                          :messages (list
@@ -10,7 +10,7 @@ Example using Serapeum's dict to write a concise API call:
                                           :content "hello chatgpt"))))
 ```
 
-A simple function that answers to the user optional specify model to use:
+A simple function that answers to the user with option to specify model:
 ```
 (defun get-message (response)
     (~>> response
