@@ -1,4 +1,9 @@
-(in-package #:openai)
+(defpackage :openai
+    (:use :cl :alexandria :serapeum)
+    (:import-from #:dex #:com.inuoe.jzon)
+    (:export #:create-completion #:answer))
+
+(in-package :openai)
 
 (defvar api-url "https://api.openai.com/v1/chat/completions")
 (defvar api-key (uiop:getenv "OPENAI_API_KEY"))
