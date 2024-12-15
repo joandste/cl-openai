@@ -1,3 +1,4 @@
 (defpackage #:openai
-    (:use #:cl #:alexandria #:serapeum)
+    (:use :cl :alexandria :serapeum)
+    (:import-from #:dex #:com.inuoe.jzon)
     (:export #:create-completion #:answer))
