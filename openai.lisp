@@ -1,10 +1,4 @@
-(ql:quickload :dexador)
-(ql:quickload :serapeum)
-(ql:quickload :com.inuoe.jzon)
-
-(defpackage :openai (:use #:cl #:alexandria #:serapeum))
-
-(in-package :openai)
+(in-package #:openai)
 
 (defvar api-url "https://api.openai.com/v1/chat/completions")
 (defvar api-key (uiop:getenv "OPENAI_API_KEY"))
@@ -30,13 +24,3 @@
                                  :messages (list
                                             (dict :role "user"
                                                   :content question-string))))))
-
-
-;; its easy to write concise data using serapeum dict
-;; examples:
-(create-completion (dict :model "gpt-4o-mini"
-                         :messages (list
-                                    (dict :role "user"
-                                          :content "hi"))))
-
-(answer "how do i write a concise hashmap in common lisp")
