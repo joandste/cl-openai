@@ -1,6 +1,6 @@
 (defpackage :openai
     (:use :cl :alexandria :serapeum)
-    (:export #:chat-completion #:generate-image #:*api-url* #:api-post))
+    (:export #:chat-completion #:generate-image #:*api-url* #:api-request #:list-models))
 
 (in-package :openai)
 
