@@ -4,8 +4,8 @@
 
 Example using Serapeum's dict to write an API call with lisp datastructures:
 ```
-(create-completion (dict :model "gpt-4o-mini"
-                         :messages (list
+(chat-completion (dict :model "gpt-4o-mini"
+                       :messages (list
                                     (dict :role "user"
                                           :content "hello chatgpt"))))
 ```
