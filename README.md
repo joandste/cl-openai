@@ -4,10 +4,10 @@
 
 Example using Serapeum's dict to write an API call with lisp datastructures:
 ```
-(chat-completion (dict :model "gpt-4o-mini"
-                       :messages (list
-                                    (dict :role "user"
-                                          :content "hello chatgpt"))))
+(create-chat-completion (dict :model "gpt-4o-mini"
+                              :messages (list
+                                            (dict :role "user"
+                                                  :content "hello chatgpt"))))
 ```
 
 A simple function that answers to the user with option to specify model:
@@ -21,7 +21,7 @@ A simple function that answers to the user with option to specify model:
 
 (defun answer (question-string &key (model "gpt-4o-mini"))
     (get-message 
-        (chat-completion
+        (create-chat-completion
             (dict :model model
                   :messages (list
                                 (dict :role "user"
